@@ -1,0 +1,36 @@
+{
+  "provider": "local",
+  "subAgentProvider": "local",
+  "whisperProvider": "local",
+  "useToolRAG": true,
+  "toolRAGProvider": "local",
+
+  "hfToken": null,
+  
+  "customInstructions": "You are a helpful AI assistant using TinyLlama model. Be concise and accurate.",
+
+  "localModelName": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "localTokenizerNameOrPath": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "localPort": "8000",
+  "localCtxLen": "2048",
+
+  "localSubAgentModelName": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "localSubAgentTokenizerNameOrPath": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "localSubAgentPort": "8001",
+  "localSubAgentCtxLen": "2048",
+
+  "localEmbeddingModelName": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "localWhisperPort": "8002",
+
+  "openAIApiKey": null,
+  "azureApiVersion": null,
+  "azureEndpoint": null,
+  "azureApiKey": null,
+  "zoomAccessToken": null,
+
+  "calendarEnabled": true,
+  "emailEnabled": false,
+  "zoomEnabled": false,
+  "noteEnabled": true,
+  "todoEnabled": true
+}
