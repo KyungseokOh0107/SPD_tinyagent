@@ -256,6 +256,7 @@ class LLMCompiler(Chain, extra="allow"):
             is_final_iter = i == self.max_replans - 1
 
             task_fetching_unit = TaskFetchingUnit(global_time=self.global_time)
+            self.planner_stream = False
             if self.planner_stream:
                 # planner_start_time = time.time() - self.global_time
                 # print(f"=========PLANNER_START_TIME: {planner_start_time:.4f}")

@@ -38,7 +38,6 @@ class Contacts:
         """
         Returns the email address of a contact by name.
         """
-        print("get_email_address")
         if platform.system() != "Darwin":
             return "This method is only supported on MacOS"
 
