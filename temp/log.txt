@@ -219,3 +219,322 @@ HTTPException 500: Error:
 ====
 Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
 HTTPException 500: Error: 
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+HTTPException 500: Error: 
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+HTTPException 500: Error: 
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: LLMError: Error code: 404 - {'detail': 'Not Found'}
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: LLMError: Error code: 404 - {'detail': 'Not Found'}
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+HTTPException 500: Error: Can't load tokenizer for 'squeeze-ai-lab/TinyAgent-1.1B'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'squeeze-ai-lab/TinyAgent-1.1B' is the correct path to a directory containing all relevant files for a LlamaTokenizerFast tokenizer.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+HTTPException 500: Error: Can't load tokenizer for 'squeeze-ai-lab/TinyAgent-1.1B'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'squeeze-ai-lab/TinyAgent-1.1B' is the correct path to a directory containing all relevant files for a LlamaTokenizerFast tokenizer.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+HTTPException 500: Error: Can't load tokenizer for 'squeeze-ai-lab/TinyAgent-1.1B'. If you were trying to load it from 'https://huggingface.co/models', make sure you don't have a local directory with the same name. Otherwise, make sure 'squeeze-ai-lab/TinyAgent-1.1B' is the correct path to a directory containing all relevant files for a LlamaTokenizerFast tokenizer.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 1
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+Error: 
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================
+
+
+====
+Received request: Create a meeting with Sid and Lutfi for tomorrow 2pm to discuss the meeting notes.
+================================================================================
+LLMCompiler planner response: 
+ 
+1. get_email_address("Sid")
+2. get_email_address("Lutfi")
+3. create_calendar_event("Meeting with Sid and Lutfi", "2024-12-12 14:00:00", "2024-12-12 15:00:00", "", ["$1", "$2"], "Discussing the meeting notes.", None)
+4. join()
+================================================================================

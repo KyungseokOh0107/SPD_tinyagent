@@ -76,7 +76,7 @@ def get_model_config(
         )
         if agent_type != AgentType.EMBEDDING:
             tokenizer = AutoTokenizer.from_pretrained(
-                config[f"local{agent_prefix}TokenizerNameOrPath"],
+                "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
                 use_fast=True,
                 token=config["hfToken"],
             )
@@ -198,8 +198,6 @@ def get_tiny_agent_config(config_path: str) -> TinyAgentConfig:
         raise ValueError("OpenAI API key is needed for whisper API.")
 
     whisper_config = get_whisper_config(config, whisper_provider)
-
-    breakpoint()
     
     apps = set()
     for app in App:

@@ -47,13 +47,13 @@
   "localTokenizerNameOrPath": "squeeze-ai-lab/TinyAgent-1.1B",
   "localSubAgentTokenizerNameOrPath": "squeeze-ai-lab/TinyAgent-1.1B",
   "localSubAgentCtxLen": "2048",
-  "localSubAgentPort": "8000",
+  "localSubAgentPort": "1234",
   "localCtxLen": "2048",
   "localEmbeddingModelName": "",
-  "localEmbeddingPort": "8000",
+  "localEmbeddingPort": "1234",
   "localEmbeddingCtxLen": "2048",
-  "localPort": "8000",
-  "localWhisperPort": "8000",
+  "localPort": "1234",
+  "localWhisperPort": "1234",
   "hfToken": "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",
   "zoomAccessToken": "temp"
 }

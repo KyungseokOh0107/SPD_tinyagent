@@ -20,7 +20,7 @@ from src.tiny_agent.tiny_agent_tools import (
 from src.tiny_agent.tool_rag.base_tool_rag import BaseToolRAG
 from src.tiny_agent.tool_rag.classifier_tool_rag import ClassifierToolRAG
 from src.utils.model_utils import get_embedding_model, get_model
-
+import time
 
 class TinyAgent:
     _DEFAULT_TOP_K = 6
@@ -32,10 +32,12 @@ class TinyAgent:
     pdf_summarizer_agent: PDFSummarizerAgent
     compose_email_agent: ComposeEmailAgent
     tool_rag: BaseToolRAG
+    global_time: float
 
     def __init__(self, config: TinyAgentConfig) -> None:
         self.config = config
-
+        global_time = time.time()
+        self.global_time = global_time
         # Define the models
         llm = get_model(
             model_type=config.llmcompiler_config.model_type.value,
@@ -70,6 +72,7 @@ class TinyAgent:
             azure_endpoint=config.azure_endpoint,
             azure_deployment=config.sub_agent_config.model_name,
         )
+
         self.computer = Computer()
         self.notes_agent = NotesAgent(
             sub_agent_llm, config.sub_agent_config, config.custom_instructions
@@ -89,6 +92,7 @@ class TinyAgent:
             tool_names=get_tool_names_from_apps(config.apps),
             zoom_access_token=config.zoom_access_token,
         )
+
         # Define LLMCompiler
         self.agent = LLMCompiler(
             tools=tools,
@@ -105,7 +109,9 @@ class TinyAgent:
             joinner_prompt_final=OUTPUT_PROMPT_FINAL,
             max_replans=2,
             benchmark=False,
+            global_time=global_time
         )
+
         # Define ToolRAG
         if config.embedding_model_config is not None:
             embedding_model = get_embedding_model(
@@ -124,13 +130,13 @@ class TinyAgent:
             )
 
     async def arun(self, query: str) -> str:
+        start_time = time.time() - self.global_time
+        print(f"=========START_TIME: {start_time:.4f}")
         if self.config.embedding_model_config is not None:
-            print("====================yes embedding====================")
-            print("query : ", query)
             tool_rag_results = self.tool_rag.retrieve_examples_and_tools(
                 query, top_k=TinyAgent._DEFAULT_TOP_K
             )
-            print("tool_rag_results : ", tool_rag_results)
+
             new_tools = get_tiny_agent_tools(
                 computer=self.computer,
                 notes_agent=self.notes_agent,
@@ -139,7 +145,7 @@ class TinyAgent:
                 tool_names=tool_rag_results.retrieved_tools_set,
                 zoom_access_token=self.config.zoom_access_token,
             )
-            print("new_tools : ", new_tools)
+
             self.agent.planner.system_prompt = generate_llm_compiler_prompt(
                 tools=new_tools,
                 example_prompt=tool_rag_results.in_context_examples_prompt,
@@ -147,13 +153,13 @@ class TinyAgent:
                     tools=new_tools, custom_instructions=self.config.custom_instructions
                 ),
             )
-            print("self.agent.planner.system_prompt :", self.agent.planner.system_prompt)
-        print("====================no embedding====================")
+
         self.compose_email_agent.query = query
+        rag_time = time.time() - self.global_time
+        print(f"=========RAG_TIME: {rag_time:.4f}")
         result = await self.agent.arun(query)
-        
-        print("result : ", result)
         if result == SUMMARY_RESULT:
             result = self.pdf_summarizer_agent.cached_summary_result
-
+        end_time = time.time() - self.global_time
+        print(f"=========END_TIME: {end_time:.4f}")
         return result

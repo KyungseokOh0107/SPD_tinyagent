@@ -23,6 +23,7 @@ from src.llm_compiler.task_fetching_unit import Task
 from src.tiny_agent.models import LLM_ERROR_TOKEN, streaming_queue
 from src.tools.base import StructuredTool, Tool
 from src.utils.logger_utils import log
+import time
 
 JOIN_DESCRIPTION = (
     "join():\n"
@@ -48,12 +49,10 @@ def generate_llm_compiler_prompt(
     # Tools
     for i, tool in enumerate(tools):
         prefix += f"{i+1}. {tool.description}\n"
-    
-    breakpoint()
+
     # Join operation
     prefix += f"{i+2}. {JOIN_DESCRIPTION}\n\n"
 
-    breakpoint()
     # Guidelines
     prefix += (
         "Guidelines:\n"
@@ -71,8 +70,6 @@ def generate_llm_compiler_prompt(
         " - Never introduce new actions other than the ones provided.\n\n"
     )
 
-    breakpoint()
-
     if custom_instructions:
         prefix += f"{custom_instructions}\n\n"
 
@@ -88,12 +85,6 @@ def generate_llm_compiler_prompt(
     # Examples
     prefix += "Here are some examples:\n\n"
     prefix += example_prompt
-
-    breakpoint()
-    # import tokenizer for model and print length of prefix
-    import transformers
-    tokenizer = transformers.AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-    print("length of prefix : ", len(tokenizer.encode(prefix)))
 
     return prefix
 
@@ -265,6 +256,7 @@ class Planner:
         example_prompt: str,
         example_prompt_replan: str,
         tools: Sequence[Union[Tool, StructuredTool]],
+        global_time: float,
         stop: Optional[list[str]],
     ):
         self.llm = llm
@@ -285,6 +277,7 @@ class Planner:
         self.tools = tools
         self.output_parser = LLMCompilerPlanParser(tools=tools)
         self.stop = stop
+        self.global_time = global_time
 
     async def run_llm(
         self,
@@ -307,11 +300,15 @@ class Planner:
                 HumanMessage(content=human_prompt),
             ]
             try:
+                planner_start_time = time.time() - self.global_time
+                print(f"=========PLANNER_START_TIME: {planner_start_time:.4f}")
                 llm_response = await self.llm._call_async(
                     messages,
                     callbacks=callbacks,
                     stop=self.stop,
                 )
+                planner_end_time = time.time() - self.global_time
+                print(f"=========PLANNER_END_TIME: {planner_end_time:.4f}")
             except Exception as e:
                 # Put this exception in the streaming queue to stop the LLM since the whole planner
                 # system is running as an async tasks concurrently and is never awaited. Hence
@@ -329,7 +326,7 @@ class Planner:
             raise ValueError("LLM must be either BaseChatModel or BaseLLM")
 
         log("LLMCompiler planner response: \n", response, block=True)
-
+        # print("response: ", response)
         return response
 
     async def plan(
@@ -359,9 +356,62 @@ class Planner:
         if callbacks:
             all_callbacks.extend(callbacks)
         try:
+            print("try aplan")
             # Actually, we don't need this try-except block here, but we keep it just in case...
             await self.run_llm(
                 inputs=inputs, is_replan=is_replan, callbacks=all_callbacks
             )
+            print("aplan end")
         except TinyAgentEarlyStop as e:
             pass
+
+    # for debugging
+    # async def aplan(
+    #     self,
+    #     inputs: dict,
+    #     task_queue: asyncio.Queue[Optional[str]],
+    #     is_replan: bool,
+    #     callbacks: Callbacks = None,
+    #     **kwargs: Any,
+    # ) -> Plan:
+    #     print("=== aplan Start ===")
+    #     print(f"Queue state before LLMCompilerCallback: empty={task_queue.empty()}, size={task_queue.qsize()}")
+        
+    #     all_callbacks = [
+    #         LLMCompilerCallback(
+    #             queue=task_queue,
+    #             tools=self.tools,
+    #         )
+    #     ]
+        
+    #     if callbacks:
+    #         all_callbacks.extend(callbacks)
+        
+    #     try:
+    #         print("Before run_llm execution")
+    #         print(f"Queue state: empty={task_queue.empty()}, size={task_queue.qsize()}")
+            
+    #         await self.run_llm(
+    #             inputs=inputs, 
+    #             is_replan=is_replan, 
+    #             callbacks=all_callbacks
+    #         )
+            
+    #         print("After run_llm execution")
+    #         print(f"Queue state: empty={task_queue.empty()}, size={task_queue.qsize()}")
+            
+    #         # 종료 시그널 추가 확인
+    #         print("Attempting to add None to queue...")
+    #         await task_queue.put(None)
+    #         print("Successfully added None to queue")
+            
+    #     except TinyAgentEarlyStop as e:
+    #         print(f"TinyAgentEarlyStop caught: {str(e)}")
+    #         print(f"Queue state at exception: empty={task_queue.empty()}, size={task_queue.qsize()}")
+    #         # 예외 발생 시에도 종료 시그널을 보내야 함
+    #         await task_queue.put(None)
+    #     except Exception as e:
+    #         print(f"Unexpected error in aplan: {str(e)}")
+    #         raise
+        
+    #     print("=== aplan End ===")

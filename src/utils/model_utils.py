@@ -46,12 +46,13 @@ def get_model(
             streaming=stream,
         )
     elif model_type == "local":
+        print("model_type : local")
         if vllm_port is None:
             raise ValueError("vllm_port must be provided for vllm model")
         llm = ChatOpenAI(
             openai_api_key=api_key,  # type: ignore
             openai_api_base=f"http://localhost:{vllm_port}/v1",
-            model_name=model_name,
+            model_name='local-model',
             temperature=temperature,
             max_retries=1,
             streaming=stream,

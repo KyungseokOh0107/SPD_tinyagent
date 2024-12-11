@@ -92,6 +92,7 @@ def get_phone_number_tool(computer: Computer) -> Tool:
 
 def get_email_address_tool(computer: Computer) -> Tool:
     async def get_email_address(name: str) -> str:
+        print("get_email_address")
         email_address = computer.contacts.get_email_address(contact_name=name)
 
         if email_address == "No contacts found" or email_address.startswith(
@@ -721,7 +722,6 @@ def get_tiny_agent_tools(
 ) -> list[Tool | StructuredTool]:
     tools: list[Tool | StructuredTool] = []
 
-    breakpoint()
     # Calendar tools
     if TinyAgentToolName.CREATE_CALENDAR_EVENT in tool_names:
         tools.append(get_create_calendar_event_tool(computer))
@@ -763,7 +763,5 @@ def get_tiny_agent_tools(
     # Zoom tools
     if TinyAgentToolName.GET_ZOOM_MEETING_LINK in tool_names:
         tools.append(get_zoom_meeting_link_tool(computer, zoom_access_token))
-    
-    breakpoint()
-    
+        
     return tools
