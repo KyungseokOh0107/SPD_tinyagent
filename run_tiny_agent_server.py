@@ -73,7 +73,6 @@ async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail="No query provided"
         )
-    breakpoint()
     try:
         tiny_agent_config = get_tiny_agent_config(config_path=CONFIG_PATH)
         tiny_agent = TinyAgent(tiny_agent_config)
@@ -82,11 +81,11 @@ async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail=f"Error: {e}",
         )
-
     async def generate():
+        await asyncio.sleep(1)
         try:
+            await asyncio.sleep(1)
             response_task = asyncio.create_task(tiny_agent.arun(query))
-
             while True:
                 # Await a small timeout to periodically check if the task is done
                 try:
@@ -102,13 +101,15 @@ async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
                 # Check if the task is done to handle any potential exception
                 if response_task.done():
                     break
-
             # Task created with asyncio.create_task() do not propagate exceptions
             # to the calling context. Instead, the exception remains encapsulated within
             # the task object itself until the task is awaited or its result is explicitly retrieved.
             # Hence, we check here if the task has an exception set by awaiting it, which will
             # raise the exception if it exists. If it doesn't, we just yield the result.
             await response_task
+            # wait 1 second
+            print("response_task")
+            await asyncio.sleep(1)
             response = response_task.result()
             yield f"\n\n{response}"
         except Exception as e:
@@ -192,4 +193,4 @@ async def ping() -> Response:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=50001)
+    uvicorn.run(app, host="127.0.0.3", port=50001)

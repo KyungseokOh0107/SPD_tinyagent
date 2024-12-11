@@ -721,6 +721,7 @@ def get_tiny_agent_tools(
 ) -> list[Tool | StructuredTool]:
     tools: list[Tool | StructuredTool] = []
 
+    breakpoint()
     # Calendar tools
     if TinyAgentToolName.CREATE_CALENDAR_EVENT in tool_names:
         tools.append(get_create_calendar_event_tool(computer))
@@ -762,5 +763,7 @@ def get_tiny_agent_tools(
     # Zoom tools
     if TinyAgentToolName.GET_ZOOM_MEETING_LINK in tool_names:
         tools.append(get_zoom_meeting_link_tool(computer, zoom_access_token))
-
+    
+    breakpoint()
+    
     return tools

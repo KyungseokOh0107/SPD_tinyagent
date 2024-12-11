@@ -1,0 +1,5 @@
+# TinyAgent 폴더 제외
+squeeze-ai-lab/TinyAgent-1.1B/
+
+# 모든 .json 파일 제외
+*.json

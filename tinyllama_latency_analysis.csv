@@ -1,0 +1,5 @@
+Dataset,Input Type,Input Length (tokens),Output Length (tokens),Prefill Latency (ms),Decode Latency (ms),Prefill Speedup,Decode Speedup
+test_data,full_input,1757,87,335.19 ± 0.63,1774.50 ± 1.54,1.00x,1.00x
+test_data,input_only,41,87,17.40 ± 0.03,1470.01 ± 0.68,19.26x,1.21x
+train_data,full_input,3403,88,870.51 ± 2.24,2321.30 ± 2.90,1.00x,1.00x
+train_data,input_only,41,88,17.39 ± 0.04,1488.32 ± 1.39,50.05x,1.56x

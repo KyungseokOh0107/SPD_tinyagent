@@ -48,10 +48,12 @@ def generate_llm_compiler_prompt(
     # Tools
     for i, tool in enumerate(tools):
         prefix += f"{i+1}. {tool.description}\n"
-
+    
+    breakpoint()
     # Join operation
     prefix += f"{i+2}. {JOIN_DESCRIPTION}\n\n"
 
+    breakpoint()
     # Guidelines
     prefix += (
         "Guidelines:\n"
@@ -69,6 +71,8 @@ def generate_llm_compiler_prompt(
         " - Never introduce new actions other than the ones provided.\n\n"
     )
 
+    breakpoint()
+
     if custom_instructions:
         prefix += f"{custom_instructions}\n\n"
 
@@ -84,6 +88,12 @@ def generate_llm_compiler_prompt(
     # Examples
     prefix += "Here are some examples:\n\n"
     prefix += example_prompt
+
+    breakpoint()
+    # import tokenizer for model and print length of prefix
+    import transformers
+    tokenizer = transformers.AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v1.0")
+    print("length of prefix : ", len(tokenizer.encode(prefix)))
 
     return prefix
 

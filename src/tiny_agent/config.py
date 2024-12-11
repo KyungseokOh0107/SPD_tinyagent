@@ -199,6 +199,8 @@ def get_tiny_agent_config(config_path: str) -> TinyAgentConfig:
 
     whisper_config = get_whisper_config(config, whisper_provider)
 
+    breakpoint()
+    
     apps = set()
     for app in App:
         if config[f"{app.value}Enabled"]:

@@ -70,7 +70,6 @@ class TinyAgent:
             azure_endpoint=config.azure_endpoint,
             azure_deployment=config.sub_agent_config.model_name,
         )
-
         self.computer = Computer()
         self.notes_agent = NotesAgent(
             sub_agent_llm, config.sub_agent_config, config.custom_instructions
@@ -90,7 +89,6 @@ class TinyAgent:
             tool_names=get_tool_names_from_apps(config.apps),
             zoom_access_token=config.zoom_access_token,
         )
-
         # Define LLMCompiler
         self.agent = LLMCompiler(
             tools=tools,
@@ -108,7 +106,6 @@ class TinyAgent:
             max_replans=2,
             benchmark=False,
         )
-
         # Define ToolRAG
         if config.embedding_model_config is not None:
             embedding_model = get_embedding_model(
@@ -128,10 +125,12 @@ class TinyAgent:
 
     async def arun(self, query: str) -> str:
         if self.config.embedding_model_config is not None:
+            print("====================yes embedding====================")
+            print("query : ", query)
             tool_rag_results = self.tool_rag.retrieve_examples_and_tools(
                 query, top_k=TinyAgent._DEFAULT_TOP_K
             )
-
+            print("tool_rag_results : ", tool_rag_results)
             new_tools = get_tiny_agent_tools(
                 computer=self.computer,
                 notes_agent=self.notes_agent,
@@ -140,7 +139,7 @@ class TinyAgent:
                 tool_names=tool_rag_results.retrieved_tools_set,
                 zoom_access_token=self.config.zoom_access_token,
             )
-
+            print("new_tools : ", new_tools)
             self.agent.planner.system_prompt = generate_llm_compiler_prompt(
                 tools=new_tools,
                 example_prompt=tool_rag_results.in_context_examples_prompt,
@@ -148,10 +147,12 @@ class TinyAgent:
                     tools=new_tools, custom_instructions=self.config.custom_instructions
                 ),
             )
-
+            print("self.agent.planner.system_prompt :", self.agent.planner.system_prompt)
+        print("====================no embedding====================")
         self.compose_email_agent.query = query
         result = await self.agent.arun(query)
-
+        
+        print("result : ", result)
         if result == SUMMARY_RESULT:
             result = self.pdf_summarizer_agent.cached_summary_result
 

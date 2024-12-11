@@ -27,11 +27,13 @@ class LLMCompilerAgent:
         self.llm = llm
 
     async def arun(self, prompt: str, callbacks=None) -> str:
+        print(prompt)
         response = await self.llm.agenerate_prompt(
             prompts=[StringPromptValue(text=prompt)],
             stop=["<END_OF_RESPONSE>"],
             callbacks=callbacks,
         )
+        print(response)
         if isinstance(self.llm, BaseChatModel):
             return response.generations[0][0].message.content
 
