@@ -1,0 +1,15 @@
+python prefixtuning_train.py \
+    --model_name "squeeze-ai-lab/TinyAgent-1.1B" \
+    --tokenizer_name "TinyLlama/TinyLlama-1.1B-Chat-v1.0" \
+    --num_virtual_tokens 3000 \
+    --learning_rate 1e-5 \
+    --num_train_epochs 1 \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 4 \
+    --warmup_steps 100 \
+    --eval_steps 1000 \
+    --save_steps 1000 \
+    --train_data_path "../tinyagent_dataset/training_data.json" \
+    --eval_data_path "../tinyagent_dataset/testing_data.json" \
+    --output_dir_base "/home/ksoh99/SPD_tinyagent/prefixtuning/prefix_tuning_output" \
+    --wandb_project "tinyagent-prefix-tuning"

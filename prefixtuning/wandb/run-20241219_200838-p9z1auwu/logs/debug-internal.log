@@ -1,0 +1,16 @@
+{"time":"2024-12-19T20:08:38.406617323+09:00","level":"INFO","msg":"using version","core version":"0.19.1"}
+{"time":"2024-12-19T20:08:38.406742415+09:00","level":"INFO","msg":"created symlink","path":"/home/ksoh99/SPD_tinyagent/prefixtuning/wandb/run-20241219_200838-p9z1auwu/logs/debug-core.log"}
+{"time":"2024-12-19T20:08:39.925103977+09:00","level":"INFO","msg":"created new stream","id":"p9z1auwu"}
+{"time":"2024-12-19T20:08:39.925162376+09:00","level":"INFO","msg":"stream: started","id":"p9z1auwu"}
+{"time":"2024-12-19T20:08:39.925177524+09:00","level":"INFO","msg":"writer: Do: started","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:08:39.925216416+09:00","level":"INFO","msg":"sender: started","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:08:39.925191359+09:00","level":"INFO","msg":"handler: started","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:08:40.263075552+09:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-12-19T20:09:25.505045373+09:00","level":"INFO","msg":"stream: closing","id":"p9z1auwu"}
+{"time":"2024-12-19T20:09:25.505090517+09:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-12-19T20:09:25.505454201+09:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-12-19T20:09:26.424541546+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2024-12-19T20:09:26.670001299+09:00","level":"INFO","msg":"handler: closed","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:09:26.670030774+09:00","level":"INFO","msg":"writer: Close: closed","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:09:26.670064817+09:00","level":"INFO","msg":"sender: closed","stream_id":"p9z1auwu"}
+{"time":"2024-12-19T20:09:26.670308619+09:00","level":"INFO","msg":"stream: closed","id":"p9z1auwu"}

@@ -1,0 +1,27 @@
+Using device: cuda
+/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/huggingface_hub/file_download.py:795: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+trainable params: 33,792,000 || all params: 1,133,840,384 || trainable%: 2.9803136734985087
+--Return--
+> /home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py(29)__init__()->None
+-> breakpoint()
+Traceback (most recent call last):
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 318, in <module>
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 237, in train
+    eval_dataset = TinyAgentDataset(args.eval_data_path, tokenizer)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 29, in __init__
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 94, in trace_dispatch
+    return self.dispatch_return(frame, arg)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 156, in dispatch_return
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+Traceback (most recent call last):
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 318, in <module>
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 237, in train
+    eval_dataset = TinyAgentDataset(args.eval_data_path, tokenizer)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 29, in __init__
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 94, in trace_dispatch
+    return self.dispatch_return(frame, arg)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 156, in dispatch_return
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit

@@ -1,0 +1,60 @@
+Using device: cuda
+/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/huggingface_hub/file_download.py:795: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+trainable params: 33,792,000 || all params: 1,133,840,384 || trainable%: 2.9803136734985087
+/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/accelerate/accelerator.py:432: FutureWarning: Passing the following arguments to `Accelerator` is deprecated and will be removed in version 1.0 of Accelerate: dict_keys(['dispatch_batches', 'split_batches', 'even_batches', 'use_seedable_sampler']). Please pass an `accelerate.DataLoaderConfiguration` instead:
+dataloader_config = DataLoaderConfiguration(dispatch_batches=None, split_batches=False, even_batches=True, use_seedable_sampler=True)
+  warnings.warn(
+/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/accelerate/accelerator.py:463: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler(**kwargs)
+Detected kernel version 5.4.0, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
+ 10%|█████████████████████████                                                                                                                                                                                                                                  | 1000/10007 [05:16<47:00,  3.19it/s]Traceback (most recent call last):
+{'loss': 7.6929, 'grad_norm': 0.6421434879302979, 'learning_rate': 9.7e-05, 'epoch': 0.01}
+{'loss': 4.7546, 'grad_norm': 0.38089555501937866, 'learning_rate': 9.90208943171495e-05, 'epoch': 0.02}
+{'loss': 3.5372, 'grad_norm': 0.4357185959815979, 'learning_rate': 9.801150701524176e-05, 'epoch': 0.03}
+{'loss': 3.0185, 'grad_norm': 0.3520185947418213, 'learning_rate': 9.7002119713334e-05, 'epoch': 0.04}
+{'loss': 2.663, 'grad_norm': 0.3289063572883606, 'learning_rate': 9.599273241142627e-05, 'epoch': 0.05}
+{'loss': 2.3858, 'grad_norm': 0.28768765926361084, 'learning_rate': 9.498334510951853e-05, 'epoch': 0.06}
+{'loss': 2.2832, 'grad_norm': 0.2818126082420349, 'learning_rate': 9.397395780761077e-05, 'epoch': 0.07}
+{'loss': 2.1092, 'grad_norm': 0.3024269640445709, 'learning_rate': 9.296457050570304e-05, 'epoch': 0.08}
+{'loss': 2.0087, 'grad_norm': 0.3569961190223694, 'learning_rate': 9.19551832037953e-05, 'epoch': 0.09}
+{'loss': 1.9158, 'grad_norm': 0.29907408356666565, 'learning_rate': 9.094579590188756e-05, 'epoch': 0.1}
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 317, in <module>█████████████████████████████████████████████████████████████████████████████████▉                                                                                   | 687/1023 [06:03<04:25,  1.27it/s]
+    train(args)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 274, in train
+    trainer.train()
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 1624, in train
+    return inner_training_loop(
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 2029, in _inner_training_loop
+    self._maybe_log_save_evaluate(tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 2412, in _maybe_log_save_evaluate
+    metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 3229, in evaluate
+    output = eval_loop(
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 3444, in evaluation_loop
+    preds_host = logits if preds_host is None else nested_concat(preds_host, logits, padding_index=-100)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer_pt_utils.py", line 125, in nested_concat
+    return torch_pad_and_concatenate(tensors, new_tensors, padding_index=padding_index)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer_pt_utils.py", line 84, in torch_pad_and_concatenate
+    return torch.cat((tensor1, tensor2), dim=0)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 317, in <module>
+    train(args)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_train.py", line 274, in train
+    trainer.train()
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 1624, in train
+    return inner_training_loop(
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 2029, in _inner_training_loop
+    self._maybe_log_save_evaluate(tr_loss, grad_norm, model, trial, epoch, ignore_keys_for_eval)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 2412, in _maybe_log_save_evaluate
+    metrics = self.evaluate(ignore_keys=ignore_keys_for_eval)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 3229, in evaluate
+    output = eval_loop(
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer.py", line 3444, in evaluation_loop
+    preds_host = logits if preds_host is None else nested_concat(preds_host, logits, padding_index=-100)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer_pt_utils.py", line 125, in nested_concat
+    return torch_pad_and_concatenate(tensors, new_tensors, padding_index=padding_index)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/transformers/trainer_pt_utils.py", line 84, in torch_pad_and_concatenate
+    return torch.cat((tensor1, tensor2), dim=0)
+KeyboardInterrupt

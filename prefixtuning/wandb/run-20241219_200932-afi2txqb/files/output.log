@@ -1,0 +1,32 @@
+Using device: cuda
+/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/site-packages/huggingface_hub/file_download.py:795: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+trainable params: 1,441,792 || all params: 1,101,490,176 || trainable%: 0.13089467626808865
+--Return--
+> /home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py(29)__init__()->None
+-> breakpoint()
+{'input': 'Reply to the currently selected email in Mail with the match details attached and create a new note titled "Festival Notes" to summarize the discussions.', 'raw_output': '1. open_and_get_file_path("match details")\n2. create_note("Festival Notes", "Summary of the discussions will be added here.", "")\n3. reply_to_email([], "Please find the attached match details.", ["$1"])\n4. join()'}
+Traceback (most recent call last):
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 320, in <module>
+    train(args)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 237, in train
+    train_dataset = TinyAgentDataset(args.train_data_path, tokenizer)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 29, in __init__
+    breakpoint()
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 94, in trace_dispatch
+    return self.dispatch_return(frame, arg)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 156, in dispatch_return
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
+Traceback (most recent call last):
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 320, in <module>
+    train(args)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 237, in train
+    train_dataset = TinyAgentDataset(args.train_data_path, tokenizer)
+  File "/home/ksoh99/SPD_tinyagent/prefixtuning/prefixtuning_example.py", line 29, in __init__
+    breakpoint()
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 94, in trace_dispatch
+    return self.dispatch_return(frame, arg)
+  File "/home/ksoh99/.conda/envs/tinyagent/lib/python3.10/bdb.py", line 156, in dispatch_return
+    if self.quitting: raise BdbQuit
+bdb.BdbQuit
