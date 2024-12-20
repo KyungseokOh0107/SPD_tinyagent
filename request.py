@@ -3,7 +3,7 @@ import os
 import requests
 import pandas as pd
 
-PATH = '/home/munyeolpark/spd/TinyAgent/'
+PATH = os.getcwd() + '/'
 # 0: Planner System Prompt o, Agent System Prompt o
 # 1: Planner System Prompt x, Agent System Prompt x
 # 2: Planner System Prompt x, Agent System Prompt o
@@ -33,7 +33,7 @@ dataset = json.load(f)
 f.close()
 dataset = list(dataset.values())
 
-for i, data in enumerate(dataset[0:2000]):
+for i, data in enumerate(dataset[0:1]):
     query = data['input']
 
     if USE_PLANNER_ANSWER:
