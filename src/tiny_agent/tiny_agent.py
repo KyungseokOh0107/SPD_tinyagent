@@ -20,6 +20,7 @@ from src.tiny_agent.tiny_agent_tools import (
 from src.tiny_agent.tool_rag.base_tool_rag import BaseToolRAG
 from src.tiny_agent.tool_rag.classifier_tool_rag import ClassifierToolRAG
 from src.utils.model_utils import get_embedding_model, get_model
+from src.utils.custom_logger_utils import CustomLogger
 import time
 
 class TinyAgent:
@@ -33,11 +34,12 @@ class TinyAgent:
     compose_email_agent: ComposeEmailAgent
     tool_rag: BaseToolRAG
     global_time: float
+    custom_logger: CustomLogger
 
-    def __init__(self, config: TinyAgentConfig) -> None:
+    def __init__(self, config: TinyAgentConfig, global_time: float, custom_logger: CustomLogger) -> None:
         self.config = config
-        global_time = time.time()
         self.global_time = global_time
+        self.custom_logger = custom_logger
         # Define the models
         llm = get_model(
             model_type=config.llmcompiler_config.model_type.value,
@@ -49,17 +51,19 @@ class TinyAgent:
             azure_api_version=config.azure_api_version,
             azure_endpoint=config.azure_endpoint,
             azure_deployment=config.llmcompiler_config.model_name,
+            n_token_generation=self.custom_logger.generation_token_list[1]
         )
         planner_llm = get_model(
             model_type=config.llmcompiler_config.model_type.value,
             model_name=config.llmcompiler_config.model_name,
             api_key=config.llmcompiler_config.api_key,
-            stream=True,
+            stream=False,
             vllm_port=config.llmcompiler_config.port,
             temperature=0,
             azure_api_version=config.azure_api_version,
             azure_endpoint=config.azure_endpoint,
             azure_deployment=config.llmcompiler_config.model_name,
+            n_token_generation=self.custom_logger.generation_token_list[0]
         )
         sub_agent_llm = get_model(
             model_type=config.sub_agent_config.model_type.value,
@@ -71,6 +75,7 @@ class TinyAgent:
             azure_api_version=config.azure_api_version,
             azure_endpoint=config.azure_endpoint,
             azure_deployment=config.sub_agent_config.model_name,
+            n_token_generation=None
         )
 
         self.computer = Computer()
@@ -103,13 +108,14 @@ class TinyAgent:
             planner_example_prompt=DEFAULT_PLANNER_IN_CONTEXT_EXAMPLES_PROMPT,
             planner_example_prompt_replan=PLANNER_PROMPT_REPLAN,
             planner_stop=[END_OF_PLAN],
-            planner_stream=True,
+            planner_stream=False,
             agent_llm=llm,
             joinner_prompt=OUTPUT_PROMPT,
             joinner_prompt_final=OUTPUT_PROMPT_FINAL,
             max_replans=2,
             benchmark=False,
-            global_time=global_time
+            global_time=global_time,
+            custom_logger = custom_logger
         )
 
         # Define ToolRAG
@@ -130,8 +136,8 @@ class TinyAgent:
             )
 
     async def arun(self, query: str) -> str:
-        start_time = time.time() - self.global_time
-        print(f"=========START_TIME: {start_time:.4f}")
+        rag_time_start = time.time() - self.global_time
+        print(f"[SYSTEM] RAG_START_TIME: {rag_time_start:.4f}")
         if self.config.embedding_model_config is not None:
             tool_rag_results = self.tool_rag.retrieve_examples_and_tools(
                 query, top_k=TinyAgent._DEFAULT_TOP_K
@@ -155,11 +161,10 @@ class TinyAgent:
             )
 
         self.compose_email_agent.query = query
-        rag_time = time.time() - self.global_time
-        print(f"=========RAG_TIME: {rag_time:.4f}")
+        rag_time_end = time.time() - self.global_time
+        print(f"[SYSTEM] RAG_END_TIME: {rag_time_end:.4f}")
+        self.custom_logger.update_rag_time(rag_time_start, rag_time_end)
         result = await self.agent.arun(query)
         if result == SUMMARY_RESULT:
             result = self.pdf_summarizer_agent.cached_summary_result
-        end_time = time.time() - self.global_time
-        print(f"=========END_TIME: {end_time:.4f}")
         return result

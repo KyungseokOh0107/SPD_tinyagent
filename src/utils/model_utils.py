@@ -19,6 +19,7 @@ def get_model(
     azure_endpoint=None,
     azure_deployment=None,
     azure_api_version=None,
+    n_token_generation=None
 ):
     if model_type == "openai":
         if api_key is None:
@@ -46,17 +47,30 @@ def get_model(
             streaming=stream,
         )
     elif model_type == "local":
-        print("model_type : local")
         if vllm_port is None:
             raise ValueError("vllm_port must be provided for vllm model")
-        llm = ChatOpenAI(
+        if n_token_generation is None:
+             llm = ChatOpenAI(
             openai_api_key=api_key,  # type: ignore
             openai_api_base=f"http://localhost:{vllm_port}/v1",
-            model_name='local-model',
+            model_name=model_name,
             temperature=temperature,
             max_retries=1,
-            streaming=stream,
-        )
+            streaming=stream
+            )
+        else:
+            llm = ChatOpenAI(
+                openai_api_key=api_key,  # type: ignore
+                openai_api_base=f"http://localhost:{vllm_port}/v1",
+                model_name=model_name,
+                temperature=temperature,
+                max_retries=1,
+                streaming=stream,
+                max_tokens = n_token_generation,
+                extra_body={
+                    "min_tokens": n_token_generation
+                }
+            )
     elif model_type == "azure":
         if api_key is None:
             raise ValueError("api_key must be provided for azure model")

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Collection, Dict, List, Optional
 
 from src.utils.logger_utils import log
+from src.utils.custom_logger_utils import CustomLogger
 import time
 SCHEDULING_INTERVAL = 0.01  # seconds
 
@@ -84,11 +85,13 @@ class TaskFetchingUnit:
     tasks_done: Dict[str, asyncio.Event]
     remaining_tasks: set[str]
     global_time: float
-    def __init__(self, global_time):
+    custom_logger: CustomLogger
+    def __init__(self, global_time, custom_logger):
         self.tasks = {}
         self.tasks_done = {}
         self.remaining_tasks = set()
         self.global_time = global_time
+        self.custom_logger = custom_logger
 
     def set_tasks(self, tasks: dict[str, Any]):
         self.tasks.update(tasks)
@@ -116,7 +119,8 @@ class TaskFetchingUnit:
         task.args = args
 
     async def _run_task(self, task: Task):
-        start_time =  time.time() - self.global_time
+        task_start_time =  time.time() - self.global_time
+        print(f"[SYSTEM] TASK_{task.idx}_START_TIME: {task_start_time:.4f}")
         try:
             self._preprocess_args(task)
             if not task.is_join:
@@ -134,8 +138,9 @@ class TaskFetchingUnit:
             )
 
         self.tasks_done[task.idx].set()
-        end_time = time.time() - self.global_time
-        print(f"========={task.idx}: {start_time:.3f} {end_time:.3f}")
+        task_end_time = time.time() - self.global_time
+        print(f"[SYSTEM] TASK_{task.idx}_END_TIME: {task_end_time:.4f}")
+        self.custom_logger.update_tool_time(task.idx, task.name, task_start_time, task_end_time)
 
 
 
@@ -158,9 +163,8 @@ class TaskFetchingUnit:
         while True:
             if not no_more_tasks:
                 # Wait for a new task to be added to the queue
-                # task = await task_queue.get()
-                task = await asyncio.wait_for(task_queue.get(), timeout=5.0)
-                print(f"Received task from queue: {task}")
+                task = await task_queue.get()
+
                 # Check for sentinel value indicating end of tasks
                 if task is None:
                     no_more_tasks = True
@@ -185,47 +189,3 @@ class TaskFetchingUnit:
             else:
                 # If no executable tasks are found, sleep for the SCHEDULING_INTERVAL
                 await asyncio.sleep(SCHEDULING_INTERVAL)
-
-    # async def aschedule(self, task_queue: asyncio.Queue[Optional[Task]], func):
-    #     print("=== aschedule Start ===")
-    #     print(f"Initial queue state: empty={task_queue.empty()}, size={task_queue.qsize()}")
-    #     no_more_tasks = False
-
-    #     while True:
-    #         if not no_more_tasks:
-    #             print("\n=== New Queue Get Attempt ===")
-    #             print(f"Current queue state before get: empty={task_queue.empty()}, size={task_queue.qsize()}")
-                
-    #             try:
-    #                 print("Attempting to get task from queue...")
-    #                 # 더 짧은 타임아웃으로 여러 번 시도
-    #                 for attempt in range(3):
-    #                     try:
-    #                         task = await asyncio.wait_for(task_queue.get(), timeout=2.0)
-    #                         print(f"Successfully got task from queue: {task}")
-    #                         break
-    #                     except asyncio.TimeoutError:
-    #                         print(f"Timeout on attempt {attempt + 1}/3")
-    #                         print(f"Queue state during timeout: empty={task_queue.empty()}, size={task_queue.qsize()}")
-    #                         if attempt == 2:  # 마지막 시도면
-    #                             raise  # 타임아웃 예외를 상위로 전파
-    #                         continue
-                    
-    #                 if task is None:
-    #                     print("Received None signal - ending task collection")
-    #                     no_more_tasks = True
-    #                 else:
-    #                     print(f"Processing received task: {task.idx}")
-    #                     self.set_tasks({task.idx: task})
-                        
-    #             except asyncio.TimeoutError:
-    #                 print("Final timeout reached - queue might be stuck")
-    #                 print(f"Queue final state: empty={task_queue.empty()}, size={task_queue.qsize()}")
-    #                 # 여기서 추가적인 진단 정보를 출력할 수 있습니다
-    #                 print(f"Queue internal _queue contents: {task_queue._queue}")
-    #                 continue
-    #             except Exception as e:
-    #                 print(f"Unexpected error while getting task: {type(e).__name__} - {str(e)}")
-    #                 raise
-
-    #         # ... 나머지 코드 ...

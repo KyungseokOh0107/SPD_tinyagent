@@ -18,20 +18,29 @@ from src.llm_compiler.task_fetching_unit import Task, TaskFetchingUnit
 from src.tiny_agent.models import streaming_queue
 from src.tools.base import StructuredTool, Tool
 from src.utils.logger_utils import log
+from src.utils.custom_logger_utils import CustomLogger
 import time
 
 class LLMCompilerAgent:
     """Self defined agent for LLM Compiler."""
 
-    def __init__(self, llm: BaseLLM) -> None:
+    def __init__(self, llm: BaseLLM, global_time: float, custom_logger: CustomLogger) -> None:
         self.llm = llm
+        self.global_time = global_time
+        self.custom_logger = custom_logger
 
     async def arun(self, prompt: str, callbacks=None) -> str:
+        agent_time_start = time.time() - self.global_time
+        print(f"[SYSTEM] AGENT_START_TIME: {agent_time_start:.4f}")
         response = await self.llm.agenerate_prompt(
             prompts=[StringPromptValue(text=prompt)],
             stop=["<END_OF_RESPONSE>"],
             callbacks=callbacks,
         )
+        agent_time_end = time.time() - self.global_time
+        print(f"[SYSTEM] AGENT_END_TIME: {agent_time_end:.4f}")
+        self.custom_logger.update_agent_time(agent_time_start, agent_time_end)
+        self.custom_logger.update_agent_token(response.llm_output['token_usage']['prompt_tokens'], response.llm_output['token_usage']['completion_tokens'])
         if isinstance(self.llm, BaseChatModel):
             return response.generations[0][0].message.content
 
@@ -62,6 +71,7 @@ class LLMCompiler(Chain, extra="allow"):
         max_replans: int,
         benchmark: bool,
         global_time: float,
+        custom_logger: CustomLogger,
         planner_custom_instructions_prompt: str | None = None,
         **kwargs,
     ) -> None:
@@ -101,10 +111,11 @@ class LLMCompiler(Chain, extra="allow"):
             custom_instructions=planner_custom_instructions_prompt,
             tools=tools,
             global_time=global_time,
+            custom_logger=custom_logger,
             stop=planner_stop,
         )
 
-        self.agent = LLMCompilerAgent(agent_llm)
+        self.agent = LLMCompilerAgent(agent_llm, global_time=global_time, custom_logger=custom_logger)
         self.joinner_prompt = joinner_prompt
         self.joinner_prompt_final = joinner_prompt_final or joinner_prompt
         self.planner_stream = planner_stream
@@ -119,6 +130,7 @@ class LLMCompiler(Chain, extra="allow"):
             self.planner_callback = None
             self.executor_callback = None
         self.global_time = global_time
+        self.custom_logger = custom_logger
 
     def get_all_stats(self):
         stats = {}
@@ -217,6 +229,12 @@ class LLMCompiler(Chain, extra="allow"):
             joinner_prompt = self.joinner_prompt_final
         else:
             joinner_prompt = self.joinner_prompt
+
+        if self.custom_logger.experiment_id == 1 or self.custom_logger.experiment_id == 3:
+            print(f"[System] Removing Agent System Prompt")
+            # joinner_prompt = ""
+            joinner_prompt = (128*"= ").strip()
+        
         prompt = (
             f"{joinner_prompt}\n"  # Instructions and examples
             f"Question: {input_query}\n\n"  # User input query
@@ -224,6 +242,7 @@ class LLMCompiler(Chain, extra="allow"):
             # "---\n"
         )
         log("Joining prompt:\n", prompt, block=True)
+
         response = await self.agent.arun(
             prompt, callbacks=[self.executor_callback] if self.benchmark else None
         )
@@ -255,8 +274,7 @@ class LLMCompiler(Chain, extra="allow"):
             is_first_iter = i == 0
             is_final_iter = i == self.max_replans - 1
 
-            task_fetching_unit = TaskFetchingUnit(global_time=self.global_time)
-            self.planner_stream = False
+            task_fetching_unit = TaskFetchingUnit(global_time=self.global_time, custom_logger=self.custom_logger)
             if self.planner_stream:
                 # planner_start_time = time.time() - self.global_time
                 # print(f"=========PLANNER_START_TIME: {planner_start_time:.4f}")
@@ -290,7 +308,6 @@ class LLMCompiler(Chain, extra="allow"):
                     self.planner_callback.additional_fields["num_tasks"] = len(tasks)
                 task_fetching_unit.set_tasks(tasks)
                 await task_fetching_unit.schedule()
-            print("finish schedule")
             tasks = task_fetching_unit.tasks
 
             # collect thought-action-observation
@@ -306,9 +323,7 @@ class LLMCompiler(Chain, extra="allow"):
                     or (task.is_join and task.observation is not None)
                 ]
             )
-            print("agent_scratchpad")
             agent_scratchpad = agent_scratchpad.strip()
-            
             log("Agent scratchpad:\n", agent_scratchpad, block=True)
             joinner_thought, answer, is_replan = await self.join(
                 inputs["input"],

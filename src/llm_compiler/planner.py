@@ -23,6 +23,7 @@ from src.llm_compiler.task_fetching_unit import Task
 from src.tiny_agent.models import LLM_ERROR_TOKEN, streaming_queue
 from src.tools.base import StructuredTool, Tool
 from src.utils.logger_utils import log
+from src.utils.custom_logger_utils import CustomLogger
 import time
 
 JOIN_DESCRIPTION = (
@@ -257,6 +258,7 @@ class Planner:
         example_prompt_replan: str,
         tools: Sequence[Union[Tool, StructuredTool]],
         global_time: float,
+        custom_logger: CustomLogger,
         stop: Optional[list[str]],
     ):
         self.llm = llm
@@ -278,6 +280,7 @@ class Planner:
         self.output_parser = LLMCompilerPlanParser(tools=tools)
         self.stop = stop
         self.global_time = global_time
+        self.custom_logger = custom_logger
 
     async def run_llm(
         self,
@@ -295,26 +298,45 @@ class Planner:
             human_prompt = f"Question: {inputs['input']}"
 
         if isinstance(self.llm, BaseChatModel):
+            if self.custom_logger.experiment_id == 1 or self.custom_logger.experiment_id == 2:
+                print(f"[System] Removing Planner System Prompt")
+                # system_prompt = ""
+                system_prompt = (128*"= ").strip()
             messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=human_prompt),
-            ]
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=human_prompt),
+                ]
             try:
                 planner_start_time = time.time() - self.global_time
-                print(f"=========PLANNER_START_TIME: {planner_start_time:.4f}")
-                llm_response = await self.llm._call_async(
-                    messages,
+                print(f"[SYSTEM] PLANNER_START_TIME: {planner_start_time:.4f}")
+                
+                result = await self.llm.agenerate(
+                    [messages],
                     callbacks=callbacks,
                     stop=self.stop,
                 )
+                llm_response = result.generations[0][0].message
+                # llm_response = await self.llm._call_async(
+                #     messages,
+                #     callbacks=callbacks,
+                #     stop=self.stop,
+                # )
                 planner_end_time = time.time() - self.global_time
-                print(f"=========PLANNER_END_TIME: {planner_end_time:.4f}")
+                print(f"[SYSTEM] PLANNER_END_TIME: {planner_end_time:.4f}")
+                self.custom_logger.update_planner_time(planner_start_time, planner_end_time)
             except Exception as e:
                 # Put this exception in the streaming queue to stop the LLM since the whole planner
                 # system is running as an async tasks concurrently and is never awaited. Hence
                 # the errors are not propagated to the main context properly.
                 await streaming_queue.put(f"{LLM_ERROR_TOKEN}LLMError: {e}")
+            
             response = llm_response.content
+            self.custom_logger.update_planner_token(result.llm_output['token_usage']['prompt_tokens'], result.llm_output['token_usage']['completion_tokens'])
+            # self.custom_logger.update_planner_token(self.llm.get_num_tokens(system_prompt + human_prompt), self.llm.get_num_tokens(response))
+            if self.custom_logger.planner_answer is not None:
+                response = self.custom_logger.planner_answer
+                
+            
         elif isinstance(self.llm, BaseLLM):
             message = system_prompt + "\n\n" + human_prompt
             response = await self.llm.apredict(
@@ -326,7 +348,7 @@ class Planner:
             raise ValueError("LLM must be either BaseChatModel or BaseLLM")
 
         log("LLMCompiler planner response: \n", response, block=True)
-        # print("response: ", response)
+        
         return response
 
     async def plan(
@@ -356,62 +378,10 @@ class Planner:
         if callbacks:
             all_callbacks.extend(callbacks)
         try:
-            print("try aplan")
+            
             # Actually, we don't need this try-except block here, but we keep it just in case...
             await self.run_llm(
                 inputs=inputs, is_replan=is_replan, callbacks=all_callbacks
             )
-            print("aplan end")
         except TinyAgentEarlyStop as e:
             pass
-
-    # for debugging
-    # async def aplan(
-    #     self,
-    #     inputs: dict,
-    #     task_queue: asyncio.Queue[Optional[str]],
-    #     is_replan: bool,
-    #     callbacks: Callbacks = None,
-    #     **kwargs: Any,
-    # ) -> Plan:
-    #     print("=== aplan Start ===")
-    #     print(f"Queue state before LLMCompilerCallback: empty={task_queue.empty()}, size={task_queue.qsize()}")
-        
-    #     all_callbacks = [
-    #         LLMCompilerCallback(
-    #             queue=task_queue,
-    #             tools=self.tools,
-    #         )
-    #     ]
-        
-    #     if callbacks:
-    #         all_callbacks.extend(callbacks)
-        
-    #     try:
-    #         print("Before run_llm execution")
-    #         print(f"Queue state: empty={task_queue.empty()}, size={task_queue.qsize()}")
-            
-    #         await self.run_llm(
-    #             inputs=inputs, 
-    #             is_replan=is_replan, 
-    #             callbacks=all_callbacks
-    #         )
-            
-    #         print("After run_llm execution")
-    #         print(f"Queue state: empty={task_queue.empty()}, size={task_queue.qsize()}")
-            
-    #         # 종료 시그널 추가 확인
-    #         print("Attempting to add None to queue...")
-    #         await task_queue.put(None)
-    #         print("Successfully added None to queue")
-            
-    #     except TinyAgentEarlyStop as e:
-    #         print(f"TinyAgentEarlyStop caught: {str(e)}")
-    #         print(f"Queue state at exception: empty={task_queue.empty()}, size={task_queue.qsize()}")
-    #         # 예외 발생 시에도 종료 시그널을 보내야 함
-    #         await task_queue.put(None)
-    #     except Exception as e:
-    #         print(f"Unexpected error in aplan: {str(e)}")
-    #         raise
-        
-    #     print("=== aplan End ===")
