@@ -13,7 +13,9 @@ streaming_queue = asyncio.Queue[str | None]()
 LLM_ERROR_TOKEN = "###LLM_ERROR_TOKEN###"
 
 # TINY_AGENT_DIR = os.path.expanduser("~/Library/Application Support/TinyAgent")
-TINY_AGENT_DIR = os.path.join(os.getcwd(), "temp")
+# path, filename = os.path.split(os.path.realpath(__file__))
+project_path = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[0:5])
+TINY_AGENT_DIR = os.path.join(project_path, "temp")
 
 Tokenizer = PreTrainedTokenizer | PreTrainedTokenizerFast | Encoding
 
