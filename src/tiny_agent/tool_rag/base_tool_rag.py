@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Collection, Sequence
 
 import torch
+# from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from typing_extensions import TypedDict

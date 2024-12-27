@@ -1,3 +1,6 @@
+# from langchain_openai import AzureChatOpenAI, ChatOpenAI
+# from langchain_community.llms.openai import OpenAI
+# from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.chat_models import AzureChatOpenAI, ChatOpenAI
 from langchain.llms import OpenAI
 from langchain_community.embeddings import HuggingFaceEmbeddings

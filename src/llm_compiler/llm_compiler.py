@@ -24,23 +24,26 @@ import time
 class LLMCompilerAgent:
     """Self defined agent for LLM Compiler."""
 
-    def __init__(self, llm: BaseLLM, global_time: float, custom_logger: CustomLogger) -> None:
+    def __init__(self, llm: BaseLLM, custom_logger: CustomLogger) -> None:
         self.llm = llm
-        self.global_time = global_time
         self.custom_logger = custom_logger
 
     async def arun(self, prompt: str, callbacks=None) -> str:
-        agent_time_start = time.time() - self.global_time
-        print(f"[SYSTEM] AGENT_START_TIME: {agent_time_start:.4f}")
+        if self.custom_logger.save_time_profile:
+            self.custom_logger.log_component_time('agent_start')
+        
         response = await self.llm.agenerate_prompt(
             prompts=[StringPromptValue(text=prompt)],
             stop=["<END_OF_RESPONSE>"],
             callbacks=callbacks,
         )
-        agent_time_end = time.time() - self.global_time
-        print(f"[SYSTEM] AGENT_END_TIME: {agent_time_end:.4f}")
-        self.custom_logger.update_agent_time(agent_time_start, agent_time_end)
-        self.custom_logger.update_agent_token(response.llm_output['token_usage']['prompt_tokens'], response.llm_output['token_usage']['completion_tokens'])
+        
+        if self.custom_logger.save_time_profile:
+            self.custom_logger.log_component_time('agent_end')
+        
+        if self.custom_logger.save_agent_inout_profile:
+            self.custom_logger.update_agent_token(response.llm_output['token_usage']['prompt_tokens'], response.llm_output['token_usage']['completion_tokens'])
+
         if isinstance(self.llm, BaseChatModel):
             return response.generations[0][0].message.content
 
@@ -70,7 +73,6 @@ class LLMCompiler(Chain, extra="allow"):
         joinner_prompt_final: Optional[str],
         max_replans: int,
         benchmark: bool,
-        global_time: float,
         custom_logger: CustomLogger,
         planner_custom_instructions_prompt: str | None = None,
         **kwargs,
@@ -110,12 +112,11 @@ class LLMCompiler(Chain, extra="allow"):
             example_prompt_replan=planner_example_prompt_replan,
             custom_instructions=planner_custom_instructions_prompt,
             tools=tools,
-            global_time=global_time,
             custom_logger=custom_logger,
             stop=planner_stop,
         )
 
-        self.agent = LLMCompilerAgent(agent_llm, global_time=global_time, custom_logger=custom_logger)
+        self.agent = LLMCompilerAgent(agent_llm, custom_logger=custom_logger)
         self.joinner_prompt = joinner_prompt
         self.joinner_prompt_final = joinner_prompt_final or joinner_prompt
         self.planner_stream = planner_stream
@@ -129,7 +130,6 @@ class LLMCompiler(Chain, extra="allow"):
         else:
             self.planner_callback = None
             self.executor_callback = None
-        self.global_time = global_time
         self.custom_logger = custom_logger
 
     def get_all_stats(self):
@@ -274,10 +274,8 @@ class LLMCompiler(Chain, extra="allow"):
             is_first_iter = i == 0
             is_final_iter = i == self.max_replans - 1
 
-            task_fetching_unit = TaskFetchingUnit(global_time=self.global_time, custom_logger=self.custom_logger)
+            task_fetching_unit = TaskFetchingUnit(custom_logger=self.custom_logger)
             if self.planner_stream:
-                # planner_start_time = time.time() - self.global_time
-                # print(f"=========PLANNER_START_TIME: {planner_start_time:.4f}")
                 task_queue = asyncio.Queue()
                 asyncio.create_task(
                     self.planner.aplan(
@@ -289,8 +287,6 @@ class LLMCompiler(Chain, extra="allow"):
                         ),
                     )
                 )
-                # planner_end_time = time.time() - self.global_time
-                # print(f"=========PLANNER_END_TIME: {planner_end_time:.4f}")
                 await task_fetching_unit.aschedule(
                     task_queue=task_queue, func=lambda x: None
                 )

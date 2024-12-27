@@ -3,7 +3,7 @@ import os
 import requests
 import pandas as pd
 
-PATH = os.getcwd() + '/'
+PATH = '/'.join(os.path.dirname(os.path.realpath(__file__)).split('/')[0:5]) + '/'
 # 0: Planner System Prompt o, Agent System Prompt o
 # 1: Planner System Prompt x, Agent System Prompt x
 # 2: Planner System Prompt x, Agent System Prompt o
@@ -28,12 +28,12 @@ if SYNC_GENERATION_TOKEN:
     data = pd.read_csv(PATH + 'overall_result_baseline.txt')
     generation_token_list_db = data[['Planner Output Token', 'Agent Output Token']].values.astype('int')
 
-f = open(os.path.join(PATH, 'dataset/training_data.json'), 'r')
+f = open(os.path.join(PATH, 'dataset/testing_data.json'), 'r')
 dataset = json.load(f)
 f.close()
 dataset = list(dataset.values())
 
-for i, data in enumerate(dataset[0:1]):
+for i, data in enumerate(dataset):
     query = data['input']
 
     if USE_PLANNER_ANSWER:

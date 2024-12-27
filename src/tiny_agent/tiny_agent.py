@@ -33,12 +33,10 @@ class TinyAgent:
     pdf_summarizer_agent: PDFSummarizerAgent
     compose_email_agent: ComposeEmailAgent
     tool_rag: BaseToolRAG
-    global_time: float
     custom_logger: CustomLogger
 
-    def __init__(self, config: TinyAgentConfig, global_time: float, custom_logger: CustomLogger) -> None:
+    def __init__(self, config: TinyAgentConfig, custom_logger: CustomLogger) -> None:
         self.config = config
-        self.global_time = global_time
         self.custom_logger = custom_logger
         # Define the models
         llm = get_model(
@@ -114,7 +112,6 @@ class TinyAgent:
             joinner_prompt_final=OUTPUT_PROMPT_FINAL,
             max_replans=2,
             benchmark=False,
-            global_time=global_time,
             custom_logger = custom_logger
         )
 
@@ -136,8 +133,9 @@ class TinyAgent:
             )
 
     async def arun(self, query: str) -> str:
-        rag_time_start = time.time() - self.global_time
-        print(f"[SYSTEM] RAG_START_TIME: {rag_time_start:.4f}")
+        if self.custom_logger.save_time_profile:
+            self.custom_logger.log_component_time('rag_start')
+
         if self.config.embedding_model_config is not None:
             tool_rag_results = self.tool_rag.retrieve_examples_and_tools(
                 query, top_k=TinyAgent._DEFAULT_TOP_K
@@ -161,9 +159,10 @@ class TinyAgent:
             )
 
         self.compose_email_agent.query = query
-        rag_time_end = time.time() - self.global_time
-        print(f"[SYSTEM] RAG_END_TIME: {rag_time_end:.4f}")
-        self.custom_logger.update_rag_time(rag_time_start, rag_time_end)
+
+        if self.custom_logger.save_time_profile:
+            self.custom_logger.log_component_time('rag_end')
+        
         result = await self.agent.arun(query)
         if result == SUMMARY_RESULT:
             result = self.pdf_summarizer_agent.cached_summary_result

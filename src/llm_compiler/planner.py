@@ -25,6 +25,7 @@ from src.tools.base import StructuredTool, Tool
 from src.utils.logger_utils import log
 from src.utils.custom_logger_utils import CustomLogger
 import time
+from transformers import AutoTokenizer
 
 JOIN_DESCRIPTION = (
     "join():\n"
@@ -257,7 +258,6 @@ class Planner:
         example_prompt: str,
         example_prompt_replan: str,
         tools: Sequence[Union[Tool, StructuredTool]],
-        global_time: float,
         custom_logger: CustomLogger,
         stop: Optional[list[str]],
     ):
@@ -279,7 +279,6 @@ class Planner:
         self.tools = tools
         self.output_parser = LLMCompilerPlanParser(tools=tools)
         self.stop = stop
-        self.global_time = global_time
         self.custom_logger = custom_logger
 
     async def run_llm(
@@ -307,9 +306,9 @@ class Planner:
                     HumanMessage(content=human_prompt),
                 ]
             try:
-                planner_start_time = time.time() - self.global_time
-                print(f"[SYSTEM] PLANNER_START_TIME: {planner_start_time:.4f}")
-                
+                if self.custom_logger.save_time_profile:
+                    self.custom_logger.log_component_time('planner_start')
+                # import pdb;pdb.set_trace()
                 result = await self.llm.agenerate(
                     [messages],
                     callbacks=callbacks,
@@ -321,9 +320,9 @@ class Planner:
                 #     callbacks=callbacks,
                 #     stop=self.stop,
                 # )
-                planner_end_time = time.time() - self.global_time
-                print(f"[SYSTEM] PLANNER_END_TIME: {planner_end_time:.4f}")
-                self.custom_logger.update_planner_time(planner_start_time, planner_end_time)
+                print(result.llm_output['token_usage']['prompt_tokens'])
+                if self.custom_logger.save_time_profile:
+                    self.custom_logger.log_component_time('planner_end')
             except Exception as e:
                 # Put this exception in the streaming queue to stop the LLM since the whole planner
                 # system is running as an async tasks concurrently and is never awaited. Hence
@@ -331,8 +330,30 @@ class Planner:
                 await streaming_queue.put(f"{LLM_ERROR_TOKEN}LLMError: {e}")
             
             response = llm_response.content
-            self.custom_logger.update_planner_token(result.llm_output['token_usage']['prompt_tokens'], result.llm_output['token_usage']['completion_tokens'])
-            # self.custom_logger.update_planner_token(self.llm.get_num_tokens(system_prompt + human_prompt), self.llm.get_num_tokens(response))
+
+            if self.custom_logger.save_planner_inout_profile:
+                tokenizer = AutoTokenizer.from_pretrained("/home/munyeolpark/spd/models/TinyAgent-1.1B")
+                tokens = tokenizer.tokenize(system_prompt)
+                n_system_prompt_token = len(tokens)
+                tokens = tokenizer.tokenize(human_prompt)
+                n_human_prompt_token = len(tokens)
+                result = await self.llm.agenerate(
+                    [[SystemMessage(content=system_prompt)]],
+                    callbacks=callbacks,
+                    stop=self.stop,
+                )
+                print(result.llm_output['token_usage']['prompt_tokens'])
+
+                result = await self.llm.agenerate(
+                    [[HumanMessage(content=human_prompt)]],
+                    callbacks=callbacks,
+                    stop=self.stop,
+                )
+                print(result.llm_output['token_usage']['prompt_tokens'])
+
+                self.custom_logger.update_planner_token(result.llm_output['token_usage']['prompt_tokens'], result.llm_output['token_usage']['completion_tokens'])
+                self.custom_logger.update_planner_profile(system_prompt, human_prompt, response)
+
             if self.custom_logger.planner_answer is not None:
                 response = self.custom_logger.planner_answer
                 

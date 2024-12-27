@@ -64,77 +64,77 @@ async def custom_http_exception_handler(request, exc):
     return PlainTextResponse(exc.detail, status_code=exc.status_code)
 
 
-@app.post("/generate")
-async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
-    """
-    This is the main endpoint that calls the TinyAgent to generate a response to the given query.
-    """
-    custom_logger = CustomLogger(PATH = '/home/munyeolpark/spd/TinyAgent/')
+# @app.post("/generate")
+# async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
+#     """
+#     This is the main endpoint that calls the TinyAgent to generate a response to the given query.
+#     """
+#     custom_logger = CustomLogger(PATH = '/home/munyeolpark/spd/TinyAgent/')
 
-    e2e_time_start = time.time()
-    print(f"[SYSTEM] E2E_START_TIME: {0:.4f}")
-    log(f"\n\n====\nReceived request: {request.query}")
-    # First, ensure the queue is empty
-    empty_queue(streaming_queue)
+#     e2e_time_start = time.time()
+#     print(f"[SYSTEM] E2E_START_TIME: {0:.4f}")
+#     log(f"\n\n====\nReceived request: {request.query}")
+#     # First, ensure the queue is empty
+#     empty_queue(streaming_queue)
 
-    query = request.query
+#     query = request.query
 
-    if not query or len(query) <= 0:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail="No query provided"
-        )
-    try:
-        tiny_agent_config = get_tiny_agent_config(config_path=CONFIG_PATH)
-        tiny_agent = TinyAgent(tiny_agent_config, e2e_time_start, custom_logger)
-    except Exception as e:
-        raise HTTPException(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail=f"Error: {e}",
-        )
+#     if not query or len(query) <= 0:
+#         raise HTTPException(
+#             status_code=HTTPStatus.BAD_REQUEST, detail="No query provided"
+#         )
+#     try:
+#         tiny_agent_config = get_tiny_agent_config(config_path=CONFIG_PATH)
+#         tiny_agent = TinyAgent(tiny_agent_config, e2e_time_start, custom_logger)
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+#             detail=f"Error: {e}",
+#         )
 
-    async def generate():
-        try:
-            response_task = asyncio.create_task(tiny_agent.arun(query))
+#     async def generate():
+#         try:
+#             response_task = asyncio.create_task(tiny_agent.arun(query))
 
-            while True:
-                # Await a small timeout to periodically check if the task is done
-                try:
-                    token = await asyncio.wait_for(streaming_queue.get(), timeout=1.0)
-                    if token is None:
-                        break
-                    if token.startswith(LLM_ERROR_TOKEN):
-                        raise Exception(token[len(LLM_ERROR_TOKEN) :])
-                    yield token
-                except asyncio.TimeoutError:
-                    pass  # No new token, check task status
+#             while True:
+#                 # Await a small timeout to periodically check if the task is done
+#                 try:
+#                     token = await asyncio.wait_for(streaming_queue.get(), timeout=1.0)
+#                     if token is None:
+#                         break
+#                     if token.startswith(LLM_ERROR_TOKEN):
+#                         raise Exception(token[len(LLM_ERROR_TOKEN) :])
+#                     yield token
+#                 except asyncio.TimeoutError:
+#                     pass  # No new token, check task status
 
-                # Check if the task is done to handle any potential exception
-                if response_task.done():
-                    break
+#                 # Check if the task is done to handle any potential exception
+#                 if response_task.done():
+#                     break
 
-            # Task created with asyncio.create_task() do not propagate exceptions
-            # to the calling context. Instead, the exception remains encapsulated within
-            # the task object itself until the task is awaited or its result is explicitly retrieved.
-            # Hence, we check here if the task has an exception set by awaiting it, which will
-            # raise the exception if it exists. If it doesn't, we just yield the result.
-            await response_task
-            response = response_task.result()
-            yield f"\n\n{response}"
-        except Exception as e:
-            # You cannot raise HTTPExceptions in an async generator, it doesn't
-            # get caught by the FastAPI exception handling middleware. Hence,
-            # we are manually catching the exceptions and yielding/logging them.
-            yield f"Error: {e}"
-            log(f"Error: {e}")
+#             # Task created with asyncio.create_task() do not propagate exceptions
+#             # to the calling context. Instead, the exception remains encapsulated within
+#             # the task object itself until the task is awaited or its result is explicitly retrieved.
+#             # Hence, we check here if the task has an exception set by awaiting it, which will
+#             # raise the exception if it exists. If it doesn't, we just yield the result.
+#             await response_task
+#             response = response_task.result()
+#             yield f"\n\n{response}"
+#         except Exception as e:
+#             # You cannot raise HTTPExceptions in an async generator, it doesn't
+#             # get caught by the FastAPI exception handling middleware. Hence,
+#             # we are manually catching the exceptions and yielding/logging them.
+#             yield f"Error: {e}"
+#             log(f"Error: {e}")
 
-        e2e_time_end = time.time() - e2e_time_start
-        print(f"[SYSTEM] E2E_END_TIME: {e2e_time_end:.4f}")
-        print(f'END')
-        custom_logger.update_e2e_time(0, e2e_time_end)
-        custom_logger.save_logging_result()
-        custom_logger.save_tool_time()
+#         e2e_time_end = time.time() - e2e_time_start
+#         print(f"[SYSTEM] E2E_END_TIME: {e2e_time_end:.4f}")
+#         print(f'END')
+#         custom_logger.update_e2e_time(0, e2e_time_end)
+#         custom_logger.save_logging_result()
+#         custom_logger.save_tool_time()
 
-    return StreamingResponse(generate(), media_type="text/event-stream")
+#     return StreamingResponse(generate(), media_type="text/event-stream")
 # async def execute_command(request: TinyAgentRequest) -> StreamingResponse:
     """
     This is the main endpoint that calls the TinyAgent to generate a response to the given query.
@@ -211,13 +211,20 @@ async def execute_command(request: TinyAgentRequest_EXPERIMENT) -> StreamingResp
         request.generation_token_list = [None, None]
 
     custom_logger = CustomLogger(file_dir=request.path,
-                                 experiment_id=request.experiment_id,
-                                 planner_answer=request.planner_answer,
-                                 generation_token_list=request.generation_token_list)
+                                experiment_id=request.experiment_id,
+                                planner_answer=request.planner_answer,
+                                generation_token_list=request.generation_token_list,
+                                save_time_profile=True,
+                                save_planner_inout_profile=True,
+                                save_agent_inout_profile=False,
+                                save_tool_inout_profile=False,
+                                )
 
-    e2e_time_start = time.time()
-    print(f"[SYSTEM] E2E_START_TIME: {0:.4f}")
     log(f"\n\n====\nReceived request: {request.query}")
+    if custom_logger.save_time_profile:
+        custom_logger.update_global_time(time.time())
+        custom_logger.log_component_time('e2e_start')
+
     # First, ensure the queue is empty
     empty_queue(streaming_queue)
 
@@ -228,19 +235,20 @@ async def execute_command(request: TinyAgentRequest_EXPERIMENT) -> StreamingResp
             status_code=HTTPStatus.BAD_REQUEST, detail="No query provided"
         )
     
-    init_time_start = time.time() - e2e_time_start
-    print(f"[SYSTEM] INIT_START_TIME: {init_time_start:.4f}")
+    if custom_logger.save_time_profile:
+        custom_logger.log_component_time('init_start')
+
     try:
         tiny_agent_config = get_tiny_agent_config(config_path=CONFIG_PATH)
-        tiny_agent = TinyAgent(tiny_agent_config, e2e_time_start, custom_logger)
+        tiny_agent = TinyAgent(tiny_agent_config, custom_logger)
     except Exception as e:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail=f"Error: {e}",
         )
-    init_time_end = time.time() - e2e_time_start
-    print(f"[SYSTEM] INIT_END_TIME: {init_time_end:.4f}")
-    custom_logger.update_init_time(init_time_start, init_time_end)
+    
+    if custom_logger.save_time_profile:
+        custom_logger.log_component_time('init_end')
 
     async def generate():
         try:
@@ -277,12 +285,10 @@ async def execute_command(request: TinyAgentRequest_EXPERIMENT) -> StreamingResp
             yield f"Error: {e}"
             log(f"Error: {e}")
 
-        e2e_time_end = time.time() - e2e_time_start
-        print(f"[SYSTEM] E2E_END_TIME: {e2e_time_end:.4f}")
+        if custom_logger.save_time_profile:
+            custom_logger.log_component_time('e2e_end')
         print(f'END')
-        custom_logger.update_e2e_time(0, e2e_time_end)
-        custom_logger.save_logging_result()
-        custom_logger.save_tool_time()
+        custom_logger.save_profile()
 
     return StreamingResponse(generate(), media_type="text/event-stream")
 

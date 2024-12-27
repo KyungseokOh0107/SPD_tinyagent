@@ -84,13 +84,11 @@ class TaskFetchingUnit:
     tasks: Dict[str, Task]
     tasks_done: Dict[str, asyncio.Event]
     remaining_tasks: set[str]
-    global_time: float
     custom_logger: CustomLogger
-    def __init__(self, global_time, custom_logger):
+    def __init__(self, custom_logger):
         self.tasks = {}
         self.tasks_done = {}
         self.remaining_tasks = set()
-        self.global_time = global_time
         self.custom_logger = custom_logger
 
     def set_tasks(self, tasks: dict[str, Any]):
@@ -119,8 +117,9 @@ class TaskFetchingUnit:
         task.args = args
 
     async def _run_task(self, task: Task):
-        task_start_time =  time.time() - self.global_time
-        print(f"[SYSTEM] TASK_{task.idx}_START_TIME: {task_start_time:.4f}")
+        if self.custom_logger.save_time_profile:
+            task_start_time =  time.time() - self.custom_logger.global_time
+            print(f"[SYSTEM] TASK_{task.idx}_START_TIME: {task_start_time:.4f}")
         try:
             self._preprocess_args(task)
             if not task.is_join:
@@ -136,11 +135,12 @@ class TaskFetchingUnit:
             task.observation = (
                 f"Error: {error_message}! You MUST correct this error and try again!"
             )
-
         self.tasks_done[task.idx].set()
-        task_end_time = time.time() - self.global_time
-        print(f"[SYSTEM] TASK_{task.idx}_END_TIME: {task_end_time:.4f}")
-        self.custom_logger.update_tool_time(task.idx, task.name, task_start_time, task_end_time)
+
+        if self.custom_logger.save_time_profile:
+            task_end_time = time.time() - self.custom_logger.global_time
+            print(f"[SYSTEM] TASK_{task.idx}_END_TIME: {task_end_time:.4f}")
+            self.custom_logger.log_tool_time(task.idx, task.name, task_start_time, task_end_time)
 
 
 
